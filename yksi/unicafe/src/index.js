@@ -7,22 +7,25 @@ const Button = (props) => (
   </button>
 )
 
-const Display = (props) => (
-  <div>{props.text} {props.value}
-  </div>
+
+const StatisticLine = (props) => (
+  <tr>
+    <td>{props.text} </td>
+    <td>{props.value}</td>
+  </tr>
 )
 
 const Statistics = (props) => {
   if (props.good != 0 || props.neutral != 0 || props.bad != 0) {
 
-    return <div>   
-    <Display value = {props.good} text ="good" />
-    <Display value = {props.neutral} text="neutral" />
-    <Display value = {props.bad} text="bad" />
-    <Display value = {props.good + props.neutral + props.bad} text="all" />
-    <Display value = {(props.good - props.bad)  / (props.good + props.neutral + props.bad)} text="average" />
-    <Display value = {100 * props.good / (props.good + props.neutral + props.bad)} text="all" />
-  </div>
+    return <table>   
+    <StatisticLine value = {props.good} text ="good" />
+    <StatisticLine value = {props.neutral} text="neutral" />
+    <StatisticLine value = {props.bad} text="bad" />
+    <StatisticLine value = {props.good + props.neutral + props.bad} text="all" />
+    <StatisticLine value = {(props.good - props.bad)  / (props.good + props.neutral + props.bad)} text="average" />
+    <StatisticLine value = {100 * props.good / (props.good + props.neutral + props.bad) + '%'} text="positive" />
+  </table>
   } else {
     return<div>No feedback given</div>
   }
