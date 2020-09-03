@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const { response } = require('express')
 
 
 const initialBlogs = [
@@ -66,11 +67,48 @@ beforeEach(async () => {
 
 
 test('there are as many blogs as initialblogs has', async () => {
-  expect.assertions(1)
   const response = await api.get('/api/blogs')
     .expect('Content-Type', /application\/json/)
   expect(response.body).toHaveLength(2)
+})
+  
+test('Blog has defined id', async () => {
+  const response = await api.get('/api/blogs')
+  expect(response.body[0].id).toBeDefined()
+})
+
+test('A blog can be added', async () => {
+  await api
+    .post('/api/blogs')
+    .send(initialBlogs[2])
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  
+  const response = await api.get('/api/blogs')
+  const titles = response.body.map(r => r.title)
+
+  expect(response.body).toHaveLength(3)
+  expect(titles).toContain('Canonical string reduction')
+  
+})
+
+test('An added blog without value for likes got zero likes', async () => {
+  const blog = new Blog({_id: "5a422ba71b54a676234d17fb",
+  title: "TDD harms architecture",
+  author: "Robert C. Martin",
+  url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+    __v: 0
   })
+  
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  
+  const response = await api.get('/api/blogs')
+  expect(response.body[2].likes).toBe(0)
+})
 
 afterAll(() => {
   mongoose.connection.close()
