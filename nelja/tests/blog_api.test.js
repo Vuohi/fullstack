@@ -59,7 +59,7 @@ beforeEach(async () => {
   await Blog.deleteMany({})
 
   let blogObject = new Blog(initialBlogs[0])
-  console.log(await blogObject.save())
+  await blogObject.save()
 
   blogObject = new Blog(initialBlogs[1])
   await blogObject.save()
@@ -93,10 +93,11 @@ test('A blog can be added', async () => {
 })
 
 test('An added blog without value for likes got zero likes', async () => {
-  const blog = new Blog({_id: "5a422ba71b54a676234d17fb",
-  title: "TDD harms architecture",
-  author: "Robert C. Martin",
-  url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+  const blog = new Blog({
+    _id: "5a422ba71b54a676234d17fb",
+    title: "TDD harms architecture",
+    author: "Robert C. Martin",
+    url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
     __v: 0
   })
   
@@ -108,6 +109,20 @@ test('An added blog without value for likes got zero likes', async () => {
   
   const response = await api.get('/api/blogs')
   expect(response.body[2].likes).toBe(0)
+})
+
+test('A new blog without title or url cannot be added', async () => {
+  const blog = new Blog({
+    _id: "5a422b891b54a676234d17fa",
+    author: "Robert C. Martin",
+    likes: 10,
+    __v: 0
+  })
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(400)
+  
 })
 
 afterAll(() => {
