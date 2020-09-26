@@ -3,7 +3,6 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
-const { response } = require('express')
 
 
 const initialBlogs = [
@@ -123,6 +122,28 @@ test('A new blog without title or url cannot be added', async () => {
     .send(blog)
     .expect(400)
   
+})
+
+test('A blog can be deleted', async () => {
+  await api.delete('/api/blogs/5a422aa71b54a676234d17f8')
+    .expect(204)
+  const response = await api.get('/api/blogs')
+  const ids = response.body.map(r => r.id)
+  expect(ids).not.toContain("5a422aa71b54a676234d17f8")
+})
+
+test('A blog can be modified', async () => {
+  const blog =  {
+    _id: "5a422a851b54a676234d17f7",
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 8,
+    __v: 0
+  }
+  const updatedBlog = await api.put('/api/blogs/5a422a851b54a676234d17f7')
+    .send(blog)
+  expect(updatedBlog.body.likes).toBe(8)
 })
 
 afterAll(() => {
