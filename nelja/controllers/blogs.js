@@ -52,7 +52,9 @@ blogsRouter.delete('/:id', async (request, response) => {
 
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     const authUser = await User.findById(decodedToken.id)
-    if (!authUser.blogs.some(b => b.id === request.params.id)) {
+    console.log(authUser.blogs)
+    console.log(request.params.id)
+    if (!authUser.blogs.includes(request.params.id)) {
         return response.status(403).json({ error: 'You are not authorized to remove this content' })
     }
 

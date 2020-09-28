@@ -64,6 +64,19 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
+const getToken = async (username, password) => {
+  const user = {
+    username,
+    name: 'test',
+    password
+  }
+  await api.post('/api/users')
+    .send(user)
+  const response = await api.post('/api/login')
+    .send({ username, password })
+  return response.body.token
+}
+
 
 test('there are as many blogs as initialblogs has', async () => {
   const response = await api.get('/api/blogs')
@@ -77,8 +90,11 @@ test('Blog has defined id', async () => {
 })
 
 test('A blog can be added', async () => {
+  const token = await getToken("Henkilo", "salasana")
+ 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(initialBlogs[2])
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -92,6 +108,7 @@ test('A blog can be added', async () => {
 })
 
 test('An added blog without value for likes got zero likes', async () => {
+  const token = await getToken("jotain", "jotain")
   const blog = new Blog({
     _id: "5a422ba71b54a676234d17fb",
     title: "TDD harms architecture",
@@ -102,6 +119,7 @@ test('An added blog without value for likes got zero likes', async () => {
   
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(blog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -111,6 +129,7 @@ test('An added blog without value for likes got zero likes', async () => {
 })
 
 test('A new blog without title or url cannot be added', async () => {
+  const token = await getToken("user", "password")
   const blog = new Blog({
     _id: "5a422b891b54a676234d17fa",
     author: "Robert C. Martin",
@@ -119,17 +138,27 @@ test('A new blog without title or url cannot be added', async () => {
   })
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(blog)
     .expect(400)
   
 })
 
 test('A blog can be deleted', async () => {
-  await api.delete('/api/blogs/5a422aa71b54a676234d17f8')
+  const token = await getToken("dsahkl", "z4uxrcvt")
+
+  const newBlog = await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(initialBlogs[2])
+    .expect(200)
+  await api
+    .delete(`/api/blogs/${newBlog.body.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
   const response = await api.get('/api/blogs')
   const ids = response.body.map(r => r.id)
-  expect(ids).not.toContain("5a422aa71b54a676234d17f8")
+  expect(ids).not.toContain(`${newBlog.id}`)
 })
 
 test('A blog can be modified', async () => {
