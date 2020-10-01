@@ -4,12 +4,14 @@ import blogService from './services/blogs'
 import LoginForm from './components/LoginForm'
 import LoggedInBar from './components/LoggedInBar'
 import Notification from './components/Notification'
+import CreateForm from './components/CreateForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
   const [isError, setIsError] = useState(false)
+  
   
 
   useEffect(() => {
@@ -42,7 +44,8 @@ const App = () => {
         :
         <div>
           <LoggedInBar user={user} setUser={setUser} />
-          <BlogList showNotification={showNotification} blogs={blogs} setIsError={setIsError} />
+          <BlogList  blogs={blogs}  />
+          <CreateForm showNotification={showNotification} setIsError={setIsError} />
         </div>}
       
     </div>
