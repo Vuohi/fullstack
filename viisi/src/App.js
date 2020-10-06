@@ -11,23 +11,21 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
   const [isError, setIsError] = useState(false)
-  
-  
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedUser')
-    if (loggedUserJson) {
-      const user = JSON.parse(loggedUserJson)
+    const loggedUser = window.localStorage.getItem('loggedUser')
+    if (loggedUser) {
+      const user = JSON.parse(loggedUser)
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, []) 
+  }, [])
 
   const showNotification = (message) => {
     console.log(message)
@@ -44,10 +42,9 @@ const App = () => {
         :
         <div>
           <LoggedInBar user={user} setUser={setUser} />
-          <BlogList  blogs={blogs}  />
+          <BlogList  blogs={blogs} user={user} />
           <CreateForm showNotification={showNotification} setIsError={setIsError} />
         </div>}
-      
     </div>
   )
 }

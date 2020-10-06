@@ -5,7 +5,7 @@ const LoggedInBar = ({user, setUser}) => {
 
 
     const logout = () => {
-        console.log("loggin out")
+        console.log('loggin out')
         window.localStorage.removeItem('loggedUser')
         setUser(null)
     }
