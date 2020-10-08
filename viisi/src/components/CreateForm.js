@@ -47,7 +47,7 @@ const CreateForm = (showNotification, setIsError) => {
             <input
               type="text"
               value={title}
-              name="Title"
+              id="Title"
               onChange={({ target }) => setTitle(target.value)}
             />
           </div>
@@ -55,7 +55,7 @@ const CreateForm = (showNotification, setIsError) => {
             <input
               type="text"
               value={author}
-              name="Author"
+              id="Author"
               onChange={({ target }) => setAuthor(target.value)}
             />
           </div>
@@ -63,7 +63,7 @@ const CreateForm = (showNotification, setIsError) => {
             <input
               type="text"
               value={url}
-              name="Url"
+              id="Url"
               onChange={({ target }) => setUrl(target.value)}
             />
           </div>
