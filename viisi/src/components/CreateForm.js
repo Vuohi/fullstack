@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const CreateForm = (showNotification, setIsError) => {
+const CreateForm = ({showNotification, setIsError}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -28,7 +28,7 @@ const CreateForm = (showNotification, setIsError) => {
       blogService.create(newBlog)
       setIsError(false)
       showNotification(`a new blog ${title} by ${author} was created`)
-    } catch (error) {
+    } catch(error) {
       setIsError(true)
       showNotification('could not create a blog')
     }
@@ -67,12 +67,12 @@ const CreateForm = (showNotification, setIsError) => {
               onChange={({ target }) => setUrl(target.value)}
             />
           </div>
-          <button type="submit">Create</button>
+          <button id="send" type="submit">Create</button>
         </form>
         <button onClick={() => setCreateFormVisible(false)}>Cancel</button>
       </div>
       <div style={hideWhenVisible}>
-        <button onClick={() => setCreateFormVisible(true)}>Create new</button>
+        <button id="openForm" onClick={() => setCreateFormVisible(true)}>Create new</button>
       </div>
     </div>
   )
