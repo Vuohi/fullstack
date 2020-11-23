@@ -14,7 +14,10 @@ const notificationReducer = (state = initialState, action) => {
     
 }
 
+let timer
+
 export const setNotification = (content, interval) => {
+    clearTimeout(timer)
     return async dispatch => {
         dispatch({
             type: 'SET_NOTIFICATION',
@@ -23,7 +26,7 @@ export const setNotification = (content, interval) => {
                 isVisible: true
             }
         })
-        setTimeout(() => {
+        timer = setTimeout(() => {
             dispatch({
                 type: 'SET_NOTIFICATION',
                 data: {
