@@ -1,36 +1,34 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { Table } from 'react-bootstrap'
 import Blog from './Blog'
-import blogService from '../services/blogs'
 
 
 
 
-const BlogList = ({ blogs, user }) => {
+const BlogList = ({ like }) => {
 
-    const like = (blog, event) => {
-        event.preventDefault()
-        const modifiedBlog = {
-          title: blog.title,
-          author: blog.author,
-          likes: blog.likes += 1,
-          url: blog.url,
-          user: blog.user?.id
-        }
-        
-        blogService.upDate(blog.id, modifiedBlog)
-    }
-    
+  const blogs = useSelector(state => state.blogs)
+
   return (
     <div>
       <div>
         <h2>blogs</h2>
+        <Table striped>
+          <tbody>
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) =>
+                <tr key={blog.id}>
+                  <td>
+                    <Blog blog={blog} handler={like} id={blog.id} />
+                  </td>
+                </tr>
+              )
+            }
 
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog, index) =>
-            <Blog key={blog.id} blog={blog} user={user} handler={like} id={index} />
-          )
-        }
+          </tbody>
+        </Table>
       </div>
     </div>
   )

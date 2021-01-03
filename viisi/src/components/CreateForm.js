@@ -1,23 +1,23 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { Form, Button } from 'react-bootstrap'
 import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
+import { setNotification, setError, removeNotification } from '../reducers/NotificationReducer'
+import { add } from '../reducers/BlogReducer'
 
-const CreateForm = ({showNotification, setIsError}) => {
+const CreateForm = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [createFormVisible, setCreateFormVisible] = useState(false)
 
-  CreateForm.propTypes = {
-    showNotification: PropTypes.func.isRequired,
-    setIsError: PropTypes.func.isRequired
-  }
+  const dispatch = useDispatch()
 
   const hideWhenVisible = { display: createFormVisible ? 'none' : '' }
   const showWhenVisible = { display: createFormVisible ? '' : 'none' }
 
 
-  const createNew = (event) => {
+  const createNew = async (event) => {
     event.preventDefault()
     const newBlog = {
       title,
@@ -25,13 +25,15 @@ const CreateForm = ({showNotification, setIsError}) => {
       url
     }
     try {
-      blogService.create(newBlog)
-      setIsError(false)
-      showNotification(`a new blog ${title} by ${author} was created`)
+      const createdBlog = await blogService.create(newBlog)
+      dispatch(add(createdBlog))
+      dispatch(setNotification(`a new blog ${title} by ${author} was created`))
     } catch(error) {
-      setIsError(true)
-      showNotification('could not create a blog')
+      dispatch(setError('could not create a blog'))
     }
+    setTimeout(() => {
+      dispatch(removeNotification())
+    }, 5000)
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -42,37 +44,40 @@ const CreateForm = ({showNotification, setIsError}) => {
     <div>
       <div style={showWhenVisible}>
         <h2>Create new</h2>
-        <form onSubmit={createNew}>
-          <div>Title
-            <input
+        <Form onSubmit={createNew}>
+          <Form.Group>
+            <Form.Label>Title:</Form.Label>
+            <Form.Control
               type="text"
               value={title}
               id="Title"
               onChange={({ target }) => setTitle(target.value)}
             />
-          </div>
-          <div>Author
-            <input
+
+            <Form.Label>Author:</Form.Label>
+            <Form.Control
               type="text"
               value={author}
               id="Author"
               onChange={({ target }) => setAuthor(target.value)}
             />
-          </div>
-          <div>Url
-            <input
-              type="text"
+
+            <Form.Label>Url:</Form.Label>
+            <Form.Control
+              placeholder="www.example.com"
+              type="url"
               value={url}
               id="Url"
               onChange={({ target }) => setUrl(target.value)}
             />
-          </div>
-          <button id="send" type="submit">Create</button>
-        </form>
-        <button onClick={() => setCreateFormVisible(false)}>Cancel</button>
+
+            <Button variant="primary" id="send" type="submit">Create</Button>
+          </Form.Group>
+        </Form>
+        <Button variant="secondary" onClick={() => setCreateFormVisible(false)}>Cancel</Button>
       </div>
       <div style={hideWhenVisible}>
-        <button id="openForm" onClick={() => setCreateFormVisible(true)}>Create new</button>
+        <Button variant="primary" id="openForm" onClick={() => setCreateFormVisible(true)}>Create new</Button>
       </div>
     </div>
   )

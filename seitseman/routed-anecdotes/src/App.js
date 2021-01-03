@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import {BrowserRouter as Router, Link, Switch, Route, useParams, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Switch, Route, useParams, Redirect } from 'react-router-dom'
+import { useField } from './hooks/index'
 
 
 
@@ -39,9 +40,9 @@ const Footer = () => (
 )
 
 const CreateNew = ({ addNew, setIsSent, setNotification }) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const { onResetContent, ...content } = useField('text')
+  const { onResetAuthor, ...author } = useField('text')
+  const { onResetInfo, ...info } = useField('text')
   
 
   
@@ -49,12 +50,12 @@ const CreateNew = ({ addNew, setIsSent, setNotification }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
-    setNotification(`New anecdote ${content} by ${author} created`)
+    setNotification(`New anecdote ${content.value} by ${author.value} created`)
     setTimeout(() => setNotification(''), 10000)
     setIsSent(true)
   }
@@ -62,20 +63,21 @@ const CreateNew = ({ addNew, setIsSent, setNotification }) => {
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form >
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content} />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button onClick={handleSubmit}>create</button>
+        <button onClick={function () { onResetContent(); onResetAuthor(); onResetInfo() } }>reset</button>
       </form>
     </div>
   )
@@ -128,7 +130,7 @@ const App = () => {
     }
   ])
   const [isSent, setIsSent] = useState(false)
-  const [notification, setNotification] = useState('jdkjgkjs')
+  const [notification, setNotification] = useState('')
 
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
